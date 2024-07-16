@@ -9,7 +9,7 @@ import sample2 from './images/sample2.jpeg';
 import sample3 from './images/sample3.jpeg';
 import sample4 from './images/sample4.jpeg';
 
-const SEVER_URL = 'https://advaithmalka.github.io/cop-classifier/predict'
+const SEVER_URL = 'https://cop-classifier-api.onrender.com//predict'
 
 function App() {
   const [selectedImage, setSelectedImage] = useState(null);
