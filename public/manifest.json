@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Cop classifier",
+  "name": "Cop classifier API client",
   "icons": [
     {
       "src": "favicon.ico",
