@@ -9,42 +9,55 @@ import sample2 from './images/sample2.jpeg';
 import sample3 from './images/sample3.jpeg';
 import sample4 from './images/sample4.jpeg';
 
+const SEVER_URL = 'https://advaithmalka.github.io/cop-classifier/predict'
+
 function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
   const [prediction, setPrediction] = useState('');
+  const [error, setError] = useState('');
 
   const handleDrop = (acceptedFiles) => {
     setSelectedImage(acceptedFiles[0]);
+    setError('');
   };
 
   const handleUrlSubmit = () => {
     axios.get(imageUrl, { responseType: 'blob' })
       .then(response => setSelectedImage(response.data))
-      .catch(error => console.error('Error fetching the image:', error));
+      .catch(error => {
+        console.error('Error fetching the image:', error)
+        setError('Error fetching the image');
+      });
   };
 
   const handlePredict = () => {
     const formData = new FormData();
     formData.append('file', selectedImage);
 
-    axios.post('http://127.0.0.1:5000/predict', formData)
-      .then(response => 
+    axios.post(SEVER_URL, formData)
+      .then(response => {
         setPrediction(response.data.prediction ? "Cop" : "Not a Cop")
-      )
-      .catch(error => console.error('Error predicting the image:', error));
+        setError('')
+  })
+      .catch(error => {
+        console.error('Error predicting the image:', error)
+        setError(error.toString());
+      });
   };
 
   const handleSampleImageClick = (image) => {
     fetch(image)
     .then(res => res.blob())
-    .then(blob => setSelectedImage(blob))
+    .then(blob => {
+      setSelectedImage(blob)
+      setError('')
+    })
   };
 
   useEffect(() => {
-    // run something every time name changes
     setPrediction(false)
-  }, [selectedImage]); // <-- dependency array
+  }, [selectedImage]); 
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-4">
@@ -80,7 +93,12 @@ function App() {
           <img src={URL.createObjectURL(selectedImage)} alt="Selected" className="w-full rounded-lg" />
         </div>
       )}
-      <button onClick={handlePredict} className="mt-4 p-2 rounded-lg bg-green-600 hover:bg-green-700 predict-button">Predict</button>
+      {error && (
+        <div className="mt-4 p-4 text-rose-600 rounded-lg">
+          <h2 className="text-2xl font-bold">Error: {error}</h2>
+        </div>
+      )}
+      <button onClick={handlePredict} className="mt-4 p-2 rounded-lg predict-button">Predict</button>
       {prediction && (
         <div className="mt-4 p-4 bg-gray-800 rounded-lg">
          <h2 className={`text-2xl font-bold`}>
