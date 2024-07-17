@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Dropzone from 'react-dropzone';
+import { Oval } from 'react-loader-spinner';
 import './App.css';
 
 // Import sample images
@@ -9,13 +10,14 @@ import sample2 from './images/sample2.jpeg';
 import sample3 from './images/sample3.jpeg';
 import sample4 from './images/sample4.jpeg';
 
-const SEVER_URL = 'https://cop-classifier-api.onrender.com//predict'
+const SEVER_URL = 'https://cop-classifier-api.onrender.com/predict'
 
 function App() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
   const [prediction, setPrediction] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDrop = (acceptedFiles) => {
     setSelectedImage(acceptedFiles[0]);
@@ -34,15 +36,17 @@ function App() {
   const handlePredict = () => {
     const formData = new FormData();
     formData.append('file', selectedImage);
-
+    setIsLoading(true);
     axios.post(SEVER_URL, formData)
       .then(response => {
         setPrediction(response.data.prediction ? "Cop" : "Not a Cop")
         setError('')
+        setIsLoading(false);
   })
       .catch(error => {
         console.error('Error predicting the image:', error)
         setError(error.toString());
+        setIsLoading(false);
       });
   };
 
@@ -98,13 +102,22 @@ function App() {
           <h2 className="text-2xl font-bold">Error: {error}</h2>
         </div>
       )}
-      <button onClick={handlePredict} className="mt-4 p-2 rounded-lg predict-button">Predict</button>
+      <button onClick={handlePredict} className="mt-4 p-2 rounded-lg predict-button">
+      {isLoading ? (
+          <Oval height={30} width={30} color="#ffffff" secondaryColor="#2791f4" ariaLabel="loading" />
+        ) : (
+        "Predict"
+        )}
+      </button>
       {prediction && (
         <div className="mt-4 p-4 bg-gray-800 rounded-lg">
          <h2 className={`text-2xl font-bold`}>
-            Prediction: <span className={`${prediction === "Cop" ? 'text-red-500' : 'text-green-500'}`}>
+          
+          Prediction: <span className={`${prediction === "Cop" ? 'text-red-500' : 'text-green-500'}`}>
               {prediction}
             </span>
+
+            
           </h2>
         </div>
       )} 
