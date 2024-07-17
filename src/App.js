@@ -19,6 +19,7 @@ function App() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  axios.get("https://cop-classifier-api.onrender.com")
   const handleDrop = (acceptedFiles) => {
     setSelectedImage(acceptedFiles[0]);
     setError('');
